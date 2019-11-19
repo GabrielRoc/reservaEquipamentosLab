@@ -76,6 +76,7 @@
           if (!err) {
             auth.setPersistence(firebase.auth.Auth.Persistence.SESSION).then(function () {
               auth.signInWithEmailAndPassword(values.email, values.password).then(function (user) {
+                console.log(user.flag)
                 _this.$router.replace('/verificar-email')
               }).catch((err) => {
                 _this.loading = false

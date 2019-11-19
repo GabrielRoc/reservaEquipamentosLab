@@ -51,6 +51,12 @@
           <router-link to = "/disciplinas" />
         </a-menu-item>
 
+        <a-menu-item v-if = "role === 'admin' || role === 'Supervisor'" key = "marcuzzo">
+          <a-icon type = "edit" />
+          <span> Habilitação </span>
+          <router-link to = "/habilitar" />
+        </a-menu-item>
+
         <a-menu-item v-if = "role === 'admin'" key = "usuarios">
           <a-icon class = "fa fa-users" />
           <span> Usuários </span>

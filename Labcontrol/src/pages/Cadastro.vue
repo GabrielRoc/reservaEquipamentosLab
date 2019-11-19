@@ -187,7 +187,8 @@
                   'Sobrenome': values.sobrenome,
                   'Curso': values.curso,
                   'Email': auth.currentUser.email,
-                  'role': 'Comum'
+                  'role': 'Comum',
+                  'flag': false
                 }).then(function () {
                   _this.$notification.success({
                     message: 'Yey!..',

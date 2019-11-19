@@ -15,6 +15,7 @@ import Disciplinas from '@/pages/disciplinas/Disciplinas'
 import Aulas from '@/pages/aulas/Aulas'
 import Agendamento from '@/pages/aulas/AgendamentoAulas'
 import Usuarios from '@/pages/usuarios/Usuarios'
+import Habilitacao from '@/pages/habilitacao/ListagemUsuarios'
 
 import Reservas from '@/pages/reservas/Reservas'
 import novaReserva from '@/pages/reservas/novaReserva'
@@ -188,6 +189,15 @@ const router = new Router({
       component: Usuarios,
       meta: {
         menuKey: 'usuarios',
+        requiresAuth: true
+      }
+    },
+    {
+      path: '/habilitar',
+      name: 'habilitar',
+      component: Habilitacao,
+      meta: {
+        menuKey: 'habilitacao',
         requiresAuth: true
       }
     }
