@@ -188,7 +188,7 @@
                   'Curso': values.curso,
                   'Email': auth.currentUser.email,
                   'role': 'Comum',
-                  'flag': false
+                  'flag': 'Desabilitado'
                 }).then(function () {
                   _this.$notification.success({
                     message: 'Yey!..',

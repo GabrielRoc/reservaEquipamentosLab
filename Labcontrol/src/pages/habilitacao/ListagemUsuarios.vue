@@ -10,28 +10,25 @@
 
       <span slot = "actions" slot-scope = "text, record">
         
-        <a-tooltip v-if = "record.type !== 'admin'" placement = "top">
+        <a-tooltip v-if = "record.type !== 'a' && record.type !== 'S'" placement = "top">
           <template slot = "title">
             <span> Habilitar Usuário </span>
           </template>
 
-          <a-tag @click = "promoveUsuario(text)" color = "green" :key = "text" >
-            <a-icon type = "arrow-up" />
+          <a-tag @click = "habilitaUsuario(text)" color = "green" :key = "text" >
+            <a-icon type = "up-circle" />
           </a-tag>
-        </a-tooltip>
 
-        <a-button v-else class = "ant-tag" disabled>
-          <a-icon style = "color: #52c41a" type = "arrow-up" />
-        </a-button>
-        
-        <a-tooltip placement = "top">
+          <a-tooltip placement = "top">
           <template slot = "title">
             <span> Desabilitar Usuário </span>
           </template>
 
-          <a-tag @click = "showConfirmModal(text)" color = "red" :key = "text" >
-            <a-icon type = "delete" />
+          <a-tag @click = "desabilitaUsuario(text)" color = "red" :key = "text" >
+            <a-icon type = "down-circle" />
           </a-tag>
+        </a-tooltip>
+
         </a-tooltip>
       </span>
       
@@ -67,30 +64,17 @@
         <a-tag v-if = "type == 'Supervisor'" color = "yellow" :key = "type"> {{type}} </a-tag>
       </span>
 
+      <span slot = "flagTipo" slot-scope = "flag">
+        <a-tag v-if = "flag == 'Habilitado'" color = "green" :key = "flag"> {{flag}} </a-tag>
+        <a-tag v-if = "flag == 'Desabilitado'" color = "red" :key = "flag"> {{flag}} </a-tag>
+      </span>
     </a-table>
 
-    <a-modal
-      :visible = "visibleConfirmModal"
-      :footer = "null"
-      @cancel = "closeConfirmModal()"
-      style = "padding: 32px 32px 24px;">
-
-      <a-icon type = "question-circle-o" style = "color: #faad14; font-size: 22px; margin-right: 16px" />
-      <span> <b> Cuidado! </b> </span> <br />
-      <span style = "margin-left: 38px;"> Realmente deseja deletar o usuário: {{usuario.nome}}? </span> <br />
-      <span style = "margin-left: 38px;"> <i> Esta ação não poderá ser desfeita. </i> </span> <br/>
-
-      <div style = "text-align: right; margin-top: 20px;">
-        <a-button @click = "closeConfirmModal()"> Cancelar </a-button>
-        <a-button @click = "deletaUsuario()" type = "danger"> Deletar </a-button>
-      </div> 
-    </a-modal>
   </a-spin>
 </template>
 
 <script>
   import firebaseApp from '../../firebase-controller.js'
-  import { sendEmail } from '../../emailAPI.js'
 
   const db = firebaseApp.database()
   const auth = firebaseApp.auth()
@@ -159,13 +143,18 @@
           }],
           onFilter: (value, record) => record.type === value
         }, {
+          title: 'Situação',
+          dataIndex: 'flag',
+          scopedSlots: { customRender: 'flagTipo' },
+          key: 'flag',
+          onFilter: (value, record) => record.flag === value
+        }, {
           title: 'Ações',
           dataIndex: 'id',
           key: 'acoes',
           align: 'center',
           scopedSlots: { customRender: 'actions' }
-        }],
-        visibleConfirmModal: false
+        }]
       }
     },
     beforeMount: function () {
@@ -186,7 +175,8 @@
                 'email': item.val().Email,
                 'type': item.val().role,
                 'nome': item.val().Nome + ' ' + item.val().Sobrenome,
-                'curso': item.val().Curso
+                'curso': item.val().Curso,
+                'flag': item.val().flag
               })
             } else {
               desordenados.push({
@@ -195,7 +185,8 @@
                 'email': item.val().Email,
                 'type': item.val().role,
                 'nome': item.val().Nome + ' ' + item.val().Sobrenome,
-                'curso': item.val().Curso
+                'curso': item.val().Curso,
+                'flag': item.val().flag
               })
             }
           }
@@ -219,14 +210,6 @@
         clearFilters()
         this[inputText] = ''
       },
-      showConfirmModal (id) {
-        this.usuario = this.usuarios[this.usuarios.map(function (u) { return u.id }).indexOf(id)]
-        this.visibleConfirmModal = true
-      },
-      closeConfirmModal () {
-        this.visibleConfirmModal = false
-        this.usuario = ''
-      },
       populaFiltroCursos () {
         var cursos = []
         db.ref('Controle/Cursos').orderByKey().on('value', function (snapshot) {
@@ -240,96 +223,47 @@
 
         return cursos
       },
-      deletaUsuario () {
-        let _this = this
-
-        _this.visibleConfirmModal = false
-
-        let to = [_this.usuario.nome + ' <' + _this.usuario.email + '>']
-        let textBody = 'Você foi apagado do sistema.'
-        let htmlBody = '<p>Olá, você foi apagado do sistema por supervisores. Em caso de engano, contate algum supervisor.</p>'
-
-        sendEmail(to, 'Remoção do Sistema', textBody, htmlBody)
-
-        db.ref('Usuarios').child(_this.usuario.id).remove().then(function () {
-          _this.$notification.success({
-            message: 'Yey!',
-            description: 'Usuário deletado com sucesso.'
-          })
-        }).catch(() => {
-          _this.$notification.error({
-            message: 'Yey!',
-            description: 'Falha ao deletar Usuário ' + _this.usuario
-          })
-        })
-
-        _this.usuario = ''
-      },
-      promoveUsuario (id) {
+      habilitaUsuario (id) {
         this.usuario = this.usuarios[this.usuarios.map(function (u) { return u.id }).indexOf(id)]
 
         if (this.usuario.type === 'Comum') {
-          db.ref('Usuarios').child(this.usuario.id).update({role: 'Supervisor'}).then(() => {
+          db.ref('Usuarios').child(this.usuario.id).update({flag: 'Habilitado'}).then(() => {
             this.$notification.success({
               message: 'Yey!',
-              description: 'Usuário promovido com sucesso.'
+              description: 'Usuário habilitado com sucesso.'
             })
           }).catch(() => {
             this.$notification.error({
               message: 'Yey!',
-              description: 'Falha ao promover Usuário ' + this.usuario.nome
-            })
-          })
-        } else if (this.usuario.type === 'Supervisor') {
-          db.ref('Usuarios').child(this.usuario.id).update({role: 'admin'}).then(() => {
-            this.$notification.success({
-              message: 'Yey!',
-              description: 'Usuário promovido com sucesso.'
-            })
-          }).catch(() => {
-            this.$notification.error({
-              message: 'Yey!',
-              description: 'Falha ao promover Usuário ' + this.usuario.nome
+              description: 'Falha ao habilitar Usuário ' + this.usuario.nome
             })
           })
         } else {
           this.$notification.warning({
             message: 'Opps..',
-            description: 'Este usuário já está no nível alto baixo possível.'
+            description: 'Você não possui permissão para isso.'
           })
         }
       },
-      rebaixaUsuario (id) {
+      desabilitaUsuario (id) {
         this.usuario = this.usuarios[this.usuarios.map(function (u) { return u.id }).indexOf(id)]
 
-        if (this.usuario.type === 'admin') {
-          db.ref('Usuarios').child(this.usuario.id).update({role: 'Supervisor'}).then(() => {
+        if (this.usuario.type === 'Comum') {
+          db.ref('Usuarios').child(this.usuario.id).update({flag: 'Desabilitado'}).then(() => {
             this.$notification.success({
               message: 'Yey!',
-              description: 'Usuário rebaixado com sucesso.'
+              description: 'Usuário desabilitado com sucesso.'
             })
           }).catch(() => {
             this.$notification.error({
               message: 'Yey!',
-              description: 'Falha ao rebaixar Usuário ' + this.usuario.nome
-            })
-          })
-        } else if (this.usuario.type === 'Supervisor') {
-          db.ref('Usuarios').child(this.usuario.id).update({role: 'Comum'}).then(() => {
-            this.$notification.success({
-              message: 'Yey!',
-              description: 'Usuário rebaixado com sucesso.'
-            })
-          }).catch(() => {
-            this.$notification.error({
-              message: 'Opps..',
-              description: 'Falha ao rebaixar Usuário ' + this.usuario.nome
+              description: 'Falha ao desabilitar Usuário ' + this.usuario.nome
             })
           })
         } else {
           this.$notification.warning({
             message: 'Opps..',
-            description: 'Este usuário já está no nível mais baixo possível.'
+            description: 'Você não possui permissão para isso.'
           })
         }
       }

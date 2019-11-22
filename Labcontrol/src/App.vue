@@ -157,7 +157,6 @@
         })
 
         if (auth.currentUser) {
-          this.username = auth.currentUser.displayName
           if (!auth.currentUser.emailVerified && !this.$route.query.mode) {
             this.$router.replace('/verificar-email')
           }

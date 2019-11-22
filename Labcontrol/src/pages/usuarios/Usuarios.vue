@@ -285,7 +285,7 @@
         this.usuario = this.usuarios[this.usuarios.map(function (u) { return u.id }).indexOf(id)]
 
         if (this.usuario.type === 'Comum') {
-          db.ref('Usuarios').child(this.usuario.id).update({role: 'Supervisor'}).then(() => {
+          db.ref('Usuarios').child(this.usuario.id).update({role: 'Supervisor', flag: 'Habilitado'}).then(() => {
             this.$notification.success({
               message: 'Yey!',
               description: 'Usuário promovido com sucesso.'
@@ -297,7 +297,7 @@
             })
           })
         } else if (this.usuario.type === 'Supervisor') {
-          db.ref('Usuarios').child(this.usuario.id).update({role: 'admin'}).then(() => {
+          db.ref('Usuarios').child(this.usuario.id).update({role: 'admin', flag: 'Habilitado'}).then(() => {
             this.$notification.success({
               message: 'Yey!',
               description: 'Usuário promovido com sucesso.'
@@ -319,7 +319,7 @@
         this.usuario = this.usuarios[this.usuarios.map(function (u) { return u.id }).indexOf(id)]
 
         if (this.usuario.type === 'admin') {
-          db.ref('Usuarios').child(this.usuario.id).update({role: 'Supervisor'}).then(() => {
+          db.ref('Usuarios').child(this.usuario.id).update({role: 'Supervisor', flag: 'Habilitado'}).then(() => {
             this.$notification.success({
               message: 'Yey!',
               description: 'Usuário rebaixado com sucesso.'
