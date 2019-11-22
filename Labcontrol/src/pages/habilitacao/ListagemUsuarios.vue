@@ -10,7 +10,7 @@
 
       <span slot = "actions" slot-scope = "text, record">
         
-        <a-tooltip v-if = "record.type !== 'a' && record.type !== 'S'" placement = "top">
+        <a-tooltip v-if = "record.type !== 'admin' && record.type !== 'Supervisor'" placement = "top">
           <template slot = "title">
             <span> Habilitar Usuário </span>
           </template>
