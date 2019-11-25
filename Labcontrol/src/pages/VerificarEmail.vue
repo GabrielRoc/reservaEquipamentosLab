@@ -24,6 +24,13 @@
         </a-row>
       </a-form>
     </a-row>
+
+    <a-row style = "margin-bottom: 30px;" v-if = "visibleAlert2">
+      <a-alert2 :type = "alert2.type" showIcon>
+        <span slot = "description" v-html = "alert2.message"> {{ alert2.message }} </span>
+        <span slot = "message"> <i> {{ alert2.title }} </i> </span>
+      </a-alert2>
+    </a-row>
     
     <a-row :gutter = "16">
       <a-col :span = "12">
@@ -62,6 +69,7 @@
     },
     mounted: function () {
       this.visibleAlert = true
+      this.visibleAlert2 = true
       if (auth.currentUser.emailVerified) {
         this.alert.type = 'success'
         this.alert.title = 'E-mail confirmado com sucesso!'
@@ -70,6 +78,15 @@
         this.alert.type = 'warning'
         this.alert.title = 'Confirme seu e-mail'
         this.alert.message = 'Para utilizar o sistema abra o link de verificação de conta enviado para o e-mail: <b> ' + this.user.email + ' </b>. Caso o e-mail não apareça em sua caixa de entrada verifique a pasta de Spam.'
+      }
+      if (auth.currentUser.flag === 'Habilitado') {
+        this.alert2.type = 'success'
+        this.alert2.title = 'Usuário Habilitado com sucesso!'
+        this.alert2.message = 'Você pode utilizar o sistema de reservas normalmente!'
+      } else {
+        this.alert2.type = 'warning'
+        this.alert2.title = 'Solicite sua ativação!'
+        this.alert2.message = 'Imprima o formulário e leve para o seu professor responsável'
       }
     },
     methods: {
