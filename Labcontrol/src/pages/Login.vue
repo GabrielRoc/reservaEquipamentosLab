@@ -51,7 +51,7 @@
   import firebaseApp from '../firebase-controller.js'
 
   const auth = firebaseApp.auth()
-
+  const db = firebaseApp.database()
   export default {
     name: 'login',
     data () {
@@ -69,6 +69,7 @@
       fundo[0].setAttribute('style', 'background: white !important; margin: 24px 16px !important; padding: 24px !important;')
     },
     methods: {
+
       login () {
         let _this = this
         _this.loading = true
@@ -76,8 +77,13 @@
           if (!err) {
             auth.setPersistence(firebase.auth.Auth.Persistence.SESSION).then(function () {
               auth.signInWithEmailAndPassword(values.email, values.password).then(function (user) {
-                console.log(user.flag)
-                _this.$router.replace('/verificar-email')
+                db.ref('Usuarios/' + auth.currentUser.uid).once('value', function (snapshot) {
+                  if (snapshot.val().flag === 'Habilitado') {
+                    _this.$router.replace('/verificar-email')
+                  } else {
+                    console.log('Teste')
+                  }
+                })
               }).catch((err) => {
                 _this.loading = false
                 switch (err.message) {

@@ -25,12 +25,7 @@
       </a-form>
     </a-row>
 
-    <a-row style = "margin-bottom: 30px;" v-if = "visibleAlert2">
-      <a-alert2 :type = "alert2.type" showIcon>
-        <span slot = "description" v-html = "alert2.message"> {{ alert2.message }} </span>
-        <span slot = "message"> <i> {{ alert2.title }} </i> </span>
-      </a-alert2>
-    </a-row>
+    
     
     <a-row :gutter = "16">
       <a-col :span = "12">
@@ -88,6 +83,7 @@
         this.alert2.title = 'Solicite sua ativação!'
         this.alert2.message = 'Imprima o formulário e leve para o seu professor responsável'
       }
+      console.log({ user: auth.currentUser })
     },
     methods: {
       resendEmail: function () {
