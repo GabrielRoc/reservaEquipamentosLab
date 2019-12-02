@@ -78,10 +78,13 @@
             auth.setPersistence(firebase.auth.Auth.Persistence.SESSION).then(function () {
               auth.signInWithEmailAndPassword(values.email, values.password).then(function (user) {
                 db.ref('Usuarios/' + auth.currentUser.uid).once('value', function (snapshot) {
-                  if (snapshot.val().flag === 'Habilitado') {
-                    _this.$router.replace('/verificar-email')
-                  } else {
-                    console.log('Teste')
+                  console.log(user.emailVerified)
+                  if (user.emailVerified === false) {
+                    _this.$router.replace('./verificar-email')
+                  } else if (user.emailVerified === true && snapshot.val().flag === 'Habilitado') {
+                    _this.$router.replace('/home')
+                  } else if (user.emailVerified === true && snapshot.val().flag === 'Desabilitado') {
+                    _this.$router.replace('/naoHabilitado')
                   }
                 })
               }).catch((err) => {

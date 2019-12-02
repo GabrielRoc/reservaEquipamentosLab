@@ -16,6 +16,7 @@ import Aulas from '@/pages/aulas/Aulas'
 import Agendamento from '@/pages/aulas/AgendamentoAulas'
 import Usuarios from '@/pages/usuarios/Usuarios'
 import Habilitacao from '@/pages/habilitacao/ListagemUsuarios'
+import naoHabilitado from '@/pages/habilitacao/naoHabilitado.vue'
 
 import Reservas from '@/pages/reservas/Reservas'
 import novaReserva from '@/pages/reservas/novaReserva'
@@ -199,6 +200,13 @@ const router = new Router({
       meta: {
         menuKey: 'habilitacao',
         requiresAuth: true
+      }
+    }, {
+      path: '/habilitacao',
+      name: 'habilitacao',
+      component: naoHabilitado,
+      meta: {
+        menuKey: 'naohabilitado'
       }
     }
   ]
