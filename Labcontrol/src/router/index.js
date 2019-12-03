@@ -206,7 +206,8 @@ const router = new Router({
       name: 'habilitacao',
       component: naoHabilitado,
       meta: {
-        menuKey: 'naohabilitado'
+        menuKey: 'naohabilitado',
+        requiresAuth: true
       }
     }
   ]
